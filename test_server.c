@@ -42,7 +42,7 @@ void* modbus_comms(void *arg)
 	int socket;
 	modbus_t *ctx;
 	int rc;
-	int nPort = 80;
+	int nPort = 88;
 	uint8_t query[MODBUS_TCP_MAX_ADU_LENGTH];
 
 	printf("Waiting for TCP connection on Port %i \n",nPort);
