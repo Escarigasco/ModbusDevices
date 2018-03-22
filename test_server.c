@@ -42,12 +42,12 @@ void* modbus_comms(void *arg)
 	int socket;
 	modbus_t *ctx;
 	int rc;
-	int nPort = 88;
+	int nPort = 502;
 	uint8_t query[MODBUS_TCP_MAX_ADU_LENGTH];
 
 	printf("Waiting for TCP connection on Port %i \n",nPort);
-	ctx = modbus_new_tcp("127.0.0.1", nPort);
-	printf("Context Created");
+	ctx = modbus_new_tcp("192.168.1.100", nPort);
+	printf("Context Created\n");
 	socket = modbus_tcp_listen(ctx, 1);
 	modbus_tcp_accept(ctx, &socket);
 	printf("TCP connection started!\n");
@@ -56,10 +56,10 @@ void* modbus_comms(void *arg)
 			{
 
 			rc = modbus_receive(ctx, query);
-			if (rc >= 0)
-					
+			if (rc >= 0)	{					
 					modbus_reply(ctx, query, rc, mb_mapping);
-					
+					printf("answer sent!\n");
+				   	}
 			else
 					{
 					// Connection closed by the client or server
@@ -108,5 +108,4 @@ int main(void)
 	modbus_mapping_free(mb_mapping);
 
 	return 0;
-	}
-
+}
