@@ -9,24 +9,23 @@
 #include <time.h>
 #include <modbus/modbus.h>
 #include <math.h>
-#include<pthread.h>
 
-
-
-int main(void)
+int main(int argc, const char *argv[])
 {
-
-    int error_checker=0;
+    int error_checker = 0;
     modbus_t *ctx;
     uint16_t tab_reg[2];
     uint16_t *inp_tab_reg;
     uint8_t *tab_bit;
     uint8_t *inp_tab_bit;
-    int nPort =502;
+    int nPort = 502;
     int rc;
-    int i=0;
-    int g=0;
+    int i = 0;
+    int g = 0;
+    int slave = 1;	
+   
 
+    printf("the request address is %d and the value is %d\n", atoi(argv[1]),atoi(argv[2]));
 	ctx = modbus_new_tcp("192.168.1.100", nPort);
 	if (modbus_connect(ctx) == -1) {
         	fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
@@ -34,9 +33,22 @@ int main(void)
        	        return -1;
        }
        printf("connection achieved\n");
-
-    //https://github.com/stephane/libmodbus - Readme with modbus functions descritpions
+       rc = modbus_set_slave(ctx, slave);
+       if (rc == -1){
+           fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
+           modbus_free(ctx);
+           return -1;
+       }
  
+    //https://github.com/stephane/libmodbus - Readme with modbus functions descritpions
+    if (argc == 3){
+	int addr = atoi(argv[1]);
+	int value = atoi(argv[2]);
+	rc = modbus_write_register(ctx, addr, value);
+	if (rc == -1){
+	printf("writing failed\n");
+        }
+    }
     while(1) { //(1) Start Monitoring
 
 	    /*    for (i=0;i<15;i++){
@@ -58,7 +70,7 @@ int main(void)
 	        }*/
 		const int reference_value = 1000;
 		const int n_registers = 1;
-        	for (i=40000;i<40015;i++){
+        	for (i=0;i<10;i++){
 	        	rc = modbus_read_registers(ctx, i, n_registers, tab_reg);
 			if (rc != n_registers){
 				fprintf(stderr, "Reading failed: %s\n", modbus_strerror(errno));
